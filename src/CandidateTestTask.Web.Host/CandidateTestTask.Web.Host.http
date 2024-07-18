@@ -1,0 +1,6 @@
+@CandidateTestTask.Web.Host_HostAddress = http://localhost:5062
+
+GET {{CandidateTestTask.Web.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CandidateTestTask.Migrator Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "consoleBuild",
+            "program": "${workspaceFolder}/src/CandidateTestTask.Migrator/bin/Debug/net8.0/CandidateTestTask.Migrator.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "env": {
+                "CONSOLE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "CandidateTestTask.Migrator Launch with fake data (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "consoleBuild",
+            "program": "${workspaceFolder}/src/CandidateTestTask.Migrator/bin/Debug/net8.0/CandidateTestTask.Migrator.dll",
+            "args": [
+                "fakedata"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "env": {
+                "CONSOLE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "C#: CandidateTestTask.Web.Host [Default Configuration]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/CandidateTestTask.Web.Host/CandidateTestTask.Web.Host.csproj"
+        }
+    ]
+}
