@@ -43,8 +43,7 @@ public class CandidatesService : ICandidatesService
 
     public async Task<IEnumerable<CandidateDto>> GetCandidatesAsync(int page)
     {
-        var skip = _options.PageSize * (page - 1);
-        return await _candidateDataAccess.GetCandidatesAsync(skip, _options.PageSize)
+        return await _candidateDataAccess.GetCandidatesAsync((_options.PageSize * (page - 1)), _options.PageSize)
                                         .ContinueWith(task => _mapper.Map<IEnumerable<CandidateDto>>(task.Result));
     }
 

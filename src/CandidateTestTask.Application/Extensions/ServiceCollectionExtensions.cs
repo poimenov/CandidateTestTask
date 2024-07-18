@@ -9,8 +9,6 @@ namespace CandidateTestTask.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-
-
     public static IServiceCollection AddCandidatesConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<CandidatesOptions>(configuration.GetSection(CandidatesOptions.SectionName));

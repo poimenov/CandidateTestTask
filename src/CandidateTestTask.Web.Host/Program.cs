@@ -24,14 +24,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapGet("/", () => "Hello World");
+app.MapGet("/", () => "Hello World!");
 app.MapGet("/candidates/{page?}", async ([FromRoute] int? page, [FromServices] ICandidatesService candidates) =>
                                                                     await candidates.GetCandidatesAsync(page ?? 0));
 
 app.MapGet("/candidates/count", async ([FromServices] ICandidatesService candidates) =>
                                                                     await candidates.GetCountOfCandidatesAsync());
 
-app.MapGet("/candidate/{email}", 
+app.MapGet("/candidate/{email}",
     async (string email, ICandidatesService candidates) =>
     {
         var att = new EmailAddressAttribute();
@@ -70,3 +70,5 @@ app.MapDelete("/candidate/{email}",
     });
 
 app.Run();
+
+public partial class Program { }
