@@ -1,6 +1,6 @@
 namespace CandidateTestTask.Application.Candidates.Dto;
 
-public struct TimeIntervalDto
+public class TimeIntervalDto
 {
     public TimeIntervalDto()
     {
