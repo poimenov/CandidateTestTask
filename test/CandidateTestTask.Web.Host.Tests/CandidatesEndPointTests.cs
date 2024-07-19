@@ -132,6 +132,43 @@ public class CandidatesEndPointTestsTests
         Assert.NotNull(okResult);
     }
 
+    [Theory]
+    [InlineData("bad_email.com")]
+    [InlineData("@bad_email")]
+    [InlineData("bad_email@")]
+    public async Task DeleteCandidateAsync_ShouldReturnBadRequest(string email)
+    {
+        // Arrange
+        var candidatesServiceMock = new Mock<ICandidatesService>();
+        // Act
+        var result = await CandidatesEndPoint.DeleteCandidateAsync(email, candidatesServiceMock.Object);
+        // Assert
+        candidatesServiceMock.Verify(x => x.IsCandidateExist(It.Is<string>(x => x == email)), Times.Never);
+        candidatesServiceMock.Verify(x => x.DeleteCandidateAsync(It.Is<string>(x => x == email)), Times.Never);
+        Assert.NotNull(result);
+        Assert.IsType<Results<Ok, BadRequest, NotFound>>(result);
+        var badRequestResult = (BadRequest)result.Result;
+        Assert.NotNull(badRequestResult);
+    }
+
+    [Fact]
+    public async Task DeleteCandidateAsync_ShouldReturnNotFound()
+    {
+        // Arrange
+        var email = "delete@email.com";
+        var candidatesServiceMock = new Mock<ICandidatesService>();
+        candidatesServiceMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(false);
+        // Act
+        var result = await CandidatesEndPoint.DeleteCandidateAsync(email, candidatesServiceMock.Object);
+        // Assert
+        candidatesServiceMock.Verify(x => x.IsCandidateExist(It.Is<string>(x => x == email)), Times.Once);
+        candidatesServiceMock.Verify(x => x.DeleteCandidateAsync(It.Is<string>(x => x == email)), Times.Never);
+        Assert.NotNull(result);
+        Assert.IsType<Results<Ok, BadRequest, NotFound>>(result);
+        var notFoundResult = (NotFound)result.Result;
+        Assert.NotNull(notFoundResult);
+    }
+
     private static IEnumerable<CandidateDto> GetCandidates(int count)
     {
         var StartTimeMin = new TimeOnly(8, 0, 0);
