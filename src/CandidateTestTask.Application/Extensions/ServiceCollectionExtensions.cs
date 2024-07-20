@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCandidatesService(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(AppMappingProfile));
+        services.AddDbContextFactory<CandidatesDbContext, CandidatesDbContextFactory>();
         services.AddTransient<ICandidatesDataAccess, CandidatesDataAccess>();
         services.AddTransient<ICandidatesService, CandidatesService>();
         return services;

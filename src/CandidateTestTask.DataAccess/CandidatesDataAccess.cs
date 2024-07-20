@@ -1,20 +1,19 @@
 using CandidateTestTask.Core.Candidates;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace CandidateTestTask.DataAccess;
 
 public class CandidatesDataAccess : ICandidatesDataAccess
 {
-    protected readonly IConfiguration _configuration;
-    public CandidatesDataAccess(IConfiguration configuration)
+    protected readonly IDbContextFactory<CandidatesDbContext> _dbContextFactory;
+    public CandidatesDataAccess(IDbContextFactory<CandidatesDbContext> dbContextFactory)
     {
-        _configuration = configuration;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task CreateCandidateAsync(Candidate candidate)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             db.Candidates.Add(candidate);
             await db.SaveChangesAsync();
@@ -23,7 +22,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public async Task DeleteCandidateAsync(string email)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             if (db.Candidates.Any(c => c.Email == email))
             {
@@ -36,7 +35,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public async Task<Candidate?> GetCandidateAsync(string email)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             return await db.Candidates.FirstOrDefaultAsync(c => c.Email == email);
         }
@@ -44,7 +43,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public async Task<IEnumerable<Candidate>> GetCandidatesAsync(int skip, int take)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             return await db.Candidates.Skip(skip).Take(take).ToListAsync();
         }
@@ -52,7 +51,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public async Task<int> GetCountOfCandidatesAsync()
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             return await db.Candidates.CountAsync();
         }
@@ -60,7 +59,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public bool IsCandidateExist(string email)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             return db.Candidates.Any(c => c.Email == email);
         }
@@ -68,7 +67,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
 
     public async Task UpdateCandidateAsync(Candidate candidate)
     {
-        using (var db = new CandidatesDbContext(_configuration))
+        using (var db = _dbContextFactory.CreateDbContext())
         {
             if (db.Candidates.Any(c => c.Email == candidate.Email))
             {

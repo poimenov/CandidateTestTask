@@ -204,6 +204,7 @@ public class CandidateServiceTests
         var StartTimeMax = new TimeOnly(10, 0, 0);
         var EndTimeMin = new TimeOnly(17, 0, 0);
         var EndTimeMax = new TimeOnly(19, 0, 0);
+
         var candidateFaker = new Faker<Candidate>()
         .RuleFor(x => x.Email, f => f.Internet.Email())
         .RuleFor(x => x.FirstName, f => f.Name.FirstName())

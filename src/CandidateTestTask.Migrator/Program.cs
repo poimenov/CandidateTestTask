@@ -2,7 +2,6 @@
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
-using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using CandidateTestTask.Core.Candidates;
 using Bogus;
@@ -27,11 +26,12 @@ public class Program
 
             var jsonFileName = $"appsettings{environmentName}.json";
             var configuration = new ConfigurationBuilder().AddJsonFile(jsonFileName).Build();
-            Migrate(configuration);
+            var dbContextFactory = new CandidatesDbContextFactory(configuration);
+            Migrate(dbContextFactory);
 
             if (args.Contains("fakedata"))
             {
-                AddFakeCandidates(configuration);
+                AddFakeCandidates(dbContextFactory);
             }
 
             _log.Info("Database migrated");
@@ -46,22 +46,27 @@ public class Program
 
     }
 
-    public static void Migrate(IConfigurationRoot configuration)
+    public static void Migrate(IDbContextFactory<CandidatesDbContext> dbContextFactory)
     {
-        using (var context = new CandidatesDbContext(configuration))
+        using (var context = dbContextFactory.CreateDbContext())
         {
             context.Database.Migrate();
         }
     }
 
-    public static void AddFakeCandidates(IConfigurationRoot configuration, int count = 100)
+    public static void AddFakeCandidates(IDbContextFactory<CandidatesDbContext> dbContextFactory, int count = 100)
     {
-        var dataAccess = new CandidatesDataAccess(configuration);
+        var dataAccess = new CandidatesDataAccess(dbContextFactory);
         GetCandidates(count).ToList().ForEach(x => dataAccess.CreateCandidateAsync(x).GetAwaiter().GetResult());
     }
 
     public static IEnumerable<Candidate> GetCandidates(int count)
     {
+        var StartTimeMin = new TimeOnly(8, 0, 0);
+        var StartTimeMax = new TimeOnly(10, 0, 0);
+        var EndTimeMin = new TimeOnly(17, 0, 0);
+        var EndTimeMax = new TimeOnly(19, 0, 0);
+
         var candidateFaker = new Faker<Candidate>()
         .RuleFor(x => x.Email, f => f.Internet.Email())
         .RuleFor(x => x.FirstName, f => f.Name.FirstName())
@@ -69,7 +74,9 @@ public class Program
         .RuleFor(x => x.PhoneNumber, f => f.Phone.PhoneNumber())
         .RuleFor(x => x.LinkedInUrl, f => f.Internet.Url())
         .RuleFor(x => x.GitHubUrl, f => f.Internet.Url())
-        .RuleFor(x => x.Comment, f => f.Lorem.Paragraph());
+        .RuleFor(x => x.Comment, f => f.Lorem.Paragraph())
+        .RuleFor(x => x.StartTime, f => f.Date.BetweenTimeOnly(StartTimeMin, StartTimeMax))
+        .RuleFor(x => x.EndTime, f => f.Date.BetweenTimeOnly(EndTimeMin, EndTimeMax));
 
         return candidateFaker.Generate(count);
     }

@@ -1,15 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace CandidateTestTask.DataAccess;
 
-public class CandidatesDbContextFactory : IDesignTimeDbContextFactory<CandidatesDbContext>
+public class CandidatesDbContextFactory : IDbContextFactory<CandidatesDbContext>
 {
-    public CandidatesDbContext CreateDbContext(string[] args)
+    private readonly IConfiguration _configuration;
+    public CandidatesDbContextFactory(IConfiguration configuration)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<CandidatesDbContext>();
-        optionsBuilder.UseSqlServer("Server=localhost; Database=CandidatetestTaskDb; Trusted_Connection=True;");
+        _configuration = configuration;
+    }
 
-        return new CandidatesDbContext(optionsBuilder.Options);
+    public CandidatesDbContext CreateDbContext()
+    {
+        var options = new DbContextOptionsBuilder<CandidatesDbContext>()
+            .UseSqlServer(_configuration.GetConnectionString("Default"))
+            .Options;
+        return new CandidatesDbContext(options);
     }
 }
