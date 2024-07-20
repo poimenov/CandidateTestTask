@@ -9,5 +9,5 @@ public interface ICandidatesService
     Task<CandidateDto?> GetCandidateAsync(string email);
     Task<IEnumerable<CandidateDto>> GetCandidatesAsync(int page);
     Task<int> GetCountOfCandidatesAsync();
-    bool IsCandidateExist(string email);
+    Task<bool> IsCandidateExist(string email);
 }

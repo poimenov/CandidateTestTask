@@ -96,7 +96,7 @@ public class CandidateServiceTests
         var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
 
         var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
-        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(false);
+        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).ReturnsAsync(false);
         candidatesDataAccessMock.Setup(x => x.CreateCandidateAsync(It.Is<Candidate>(x => x.Equals(candidate))));
 
         var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
@@ -126,7 +126,7 @@ public class CandidateServiceTests
         var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
 
         var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
-        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(true);
+        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).ReturnsAsync(true);
         candidatesDataAccessMock.Setup(x => x.UpdateCandidateAsync(It.Is<Candidate>(x => x.Equals(candidate))));
 
         var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
@@ -159,7 +159,7 @@ public class CandidateServiceTests
     }
 
     [Fact]
-    public void IsCandidateExist_ShouldReturnIsCandidateExist()
+    public async void IsCandidateExist_ShouldReturnIsCandidateExist()
     {
         // Arrange
         var email = "test@test.com";
@@ -167,12 +167,12 @@ public class CandidateServiceTests
         var mapperMock = new Mock<IMapper>();
         var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
         var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
-        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(isExist);
+        candidatesDataAccessMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).ReturnsAsync(isExist);
 
         var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
 
         // Act
-        var result = candidatesService.IsCandidateExist(email);
+        var result = await candidatesService.IsCandidateExist(email);
         // Assert
         Assert.Equal(isExist, result);
         candidatesDataAccessMock.Verify(x => x.IsCandidateExist(It.Is<string>(x => x == email)), Times.Once);

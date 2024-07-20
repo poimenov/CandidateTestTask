@@ -7,6 +7,6 @@ public interface ICandidatesDataAccess
     Task UpdateCandidateAsync(Candidate candidate);
     Task DeleteCandidateAsync(string email);
     Task<IEnumerable<Candidate>> GetCandidatesAsync(int skip, int take);
-    bool IsCandidateExist(string email);
+    Task<bool> IsCandidateExist(string email);
     Task<int> GetCountOfCandidatesAsync();
 }

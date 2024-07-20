@@ -20,7 +20,7 @@ public class CandidatesService : ICandidatesService
 
     public async Task CreateUpdateCandidateAsync(CandidateDto candidate)
     {
-        if (_candidateDataAccess.IsCandidateExist(candidate.Email))
+        if (await _candidateDataAccess.IsCandidateExist(candidate.Email))
         {
             await _candidateDataAccess.UpdateCandidateAsync(_mapper.Map<Candidate>(candidate));
         }
@@ -52,8 +52,8 @@ public class CandidatesService : ICandidatesService
         return await _candidateDataAccess.GetCountOfCandidatesAsync();
     }
 
-    public bool IsCandidateExist(string email)
+    public async Task<bool> IsCandidateExist(string email)
     {
-        return _candidateDataAccess.IsCandidateExist(email);
+        return await _candidateDataAccess.IsCandidateExist(email);
     }
 }

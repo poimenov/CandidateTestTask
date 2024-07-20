@@ -38,6 +38,14 @@ public class DatabaseFixture
         }
     }
 
+    public IEnumerable<Candidate> GetCandidates(int skip, int take)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            return context.Candidates.Skip(skip).Take(take).ToList();
+        }
+    }
+
     private static IEnumerable<Candidate> GetCandidates(int count)
     {
         var StartTimeMin = new TimeOnly(8, 0, 0);

@@ -118,7 +118,7 @@ public class CandidatesEndPointTestsTests
         // Arrange
         var email = "delete@email.com";
         var candidatesServiceMock = new Mock<ICandidatesService>();
-        candidatesServiceMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(true);
+        candidatesServiceMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).ReturnsAsync(true);
         candidatesServiceMock.Setup(x => x.DeleteCandidateAsync(It.Is<string>(x => x == email)));
         // Act
         var result = await CandidatesEndPoint.DeleteCandidateAsync(email, candidatesServiceMock.Object);
@@ -157,7 +157,7 @@ public class CandidatesEndPointTestsTests
         // Arrange
         var email = "delete@email.com";
         var candidatesServiceMock = new Mock<ICandidatesService>();
-        candidatesServiceMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).Returns(false);
+        candidatesServiceMock.Setup(x => x.IsCandidateExist(It.Is<string>(x => x == email))).ReturnsAsync(false);
         // Act
         var result = await CandidatesEndPoint.DeleteCandidateAsync(email, candidatesServiceMock.Object);
         // Assert

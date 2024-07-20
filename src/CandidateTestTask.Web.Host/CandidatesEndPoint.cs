@@ -55,7 +55,7 @@ public static class CandidatesEndPoint
             return TypedResults.BadRequest();
         }
 
-        if (!candidates.IsCandidateExist(email))
+        if (!await candidates.IsCandidateExist(email))
         {
             return TypedResults.NotFound();
         }

@@ -57,11 +57,11 @@ public class CandidatesDataAccess : ICandidatesDataAccess
         }
     }
 
-    public bool IsCandidateExist(string email)
+    public async Task<bool> IsCandidateExist(string email)
     {
         using (var db = _dbContextFactory.CreateDbContext())
         {
-            return db.Candidates.Any(c => c.Email == email);
+            return await db.Candidates.AnyAsync(c => c.Email == email);
         }
     }
 
