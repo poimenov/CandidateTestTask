@@ -41,10 +41,10 @@ public static class CandidatesEndPoint
         return candidate != null ? TypedResults.Ok(candidate) : TypedResults.NotFound();
     }
 
-    public static async Task<NoContent> CreateUpdateCandidateAsync(CandidateDto candidate, ICandidatesService candidates)
+    public static async Task<Ok> CreateUpdateCandidateAsync(CandidateDto candidate, ICandidatesService candidates)
     {
         await candidates.CreateUpdateCandidateAsync(candidate);
-        return TypedResults.NoContent();
+        return TypedResults.Ok();
     }
 
     public static async Task<Results<Ok, BadRequest, NotFound>> DeleteCandidateAsync(string email, ICandidatesService candidates)

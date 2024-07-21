@@ -27,3 +27,6 @@ app.MapGroup("/candidates/v1")
     .WithTags("Candidates Endpoints");
 
 app.Run();
+
+
+public partial class Program { }

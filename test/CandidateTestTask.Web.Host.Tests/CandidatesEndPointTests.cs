@@ -97,7 +97,7 @@ public class CandidatesEndPointTestsTests
     }
 
     [Fact]
-    public async Task CreateUpdateCandidateAsync_ShouldReturnNoContent()
+    public async Task CreateUpdateCandidateAsync_ShouldReturnOk()
     {
         // Arrange
         var candidate = GetCandidates(1).First();
@@ -109,7 +109,7 @@ public class CandidatesEndPointTestsTests
         candidatesServiceMock.Verify(x => x.CreateUpdateCandidateAsync(It.Is<CandidateDto>(x => x == candidate)), Times.Once);
         candidatesServiceMock.VerifyNoOtherCalls();
         Assert.NotNull(result);
-        Assert.IsType<NoContent>(result);
+        Assert.IsType<Ok>(result);
     }
 
     [Fact]
