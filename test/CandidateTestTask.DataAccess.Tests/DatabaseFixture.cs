@@ -42,7 +42,7 @@ public class DatabaseFixture
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
-            return context.Candidates.Skip(skip).Take(take).ToList();
+            return context.Candidates.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).Skip(skip).Take(take).ToList();
         }
     }
 

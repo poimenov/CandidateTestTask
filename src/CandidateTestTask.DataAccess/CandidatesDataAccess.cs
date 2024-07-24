@@ -45,7 +45,7 @@ public class CandidatesDataAccess : ICandidatesDataAccess
     {
         using (var db = _dbContextFactory.CreateDbContext())
         {
-            return await db.Candidates.Skip(skip).Take(take).ToListAsync();
+            return await db.Candidates.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).Skip(skip).Take(take).ToListAsync();
         }
     }
 

@@ -9,7 +9,7 @@ public static class CandidatesEndPoint
 {
     public static RouteGroupBuilder MapCandidatesApi(this RouteGroupBuilder group)
     {
-        group.MapGet("/candidates/{page?}", GetCandidatesAsync);
+        group.MapGet("/candidates/{page}/{pageSize?}", GetCandidatesAsync);
         group.MapGet("/candidates/count", GetCountOfCandidatesAsync);
         group.MapGet("/candidate/{email}", GetCandidateAsync);
         group.MapPost("/candidate", CreateUpdateCandidateAsync).AddEndpointFilter<CandidateIsValidFilter>();
@@ -17,9 +17,9 @@ public static class CandidatesEndPoint
         return group;
     }
 
-    public static async Task<Ok<IEnumerable<CandidateDto>>> GetCandidatesAsync(int? page, ICandidatesService candidates)
+    public static async Task<Ok<IEnumerable<CandidateDto>>> GetCandidatesAsync(int page, int? pageSize, ICandidatesService candidates)
     {
-        var result = await candidates.GetCandidatesAsync(page ?? 0);
+        var result = await candidates.GetCandidatesAsync(((page < 0) ? 0 : page), pageSize);
         return TypedResults.Ok(result);
     }
 

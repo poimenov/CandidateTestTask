@@ -2,6 +2,7 @@ using AutoMapper;
 using Bogus;
 using CandidateTestTask.Application.Candidates;
 using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Application.Exceptions;
 using CandidateTestTask.Core;
 using CandidateTestTask.Core.Candidates;
 using Microsoft.Extensions.Options;
@@ -11,16 +12,23 @@ namespace CandidateTestTask.Application.Tests;
 
 public class CandidateServiceTests
 {
-    [Fact]
-    public async Task GetCandidatesAsync_ShouldReturnCandidates()
+    [Theory]
+    [InlineData(0, 15)]
+    [InlineData(1, null)]
+    [InlineData(1, 20)]
+    [InlineData(-2, 5)]
+    [InlineData(3, -5)]
+    [InlineData(-1, -20)]
+    public async Task GetCandidatesAsync_ShouldReturnCandidates(int page, int? pageSize)
     {
         // Arrange
-        var page = 1;
         var options = new CandidatesOptions
         {
             PageSize = 10
         };
-        var candidates = GetCandidates(options.PageSize);
+        var p = (page == 0) ? 1 : Math.Abs(page);
+        var pSize = (pageSize.HasValue) ? Math.Abs(pageSize.Value) : options.PageSize;
+        var candidates = GetCandidates(Math.Abs(pSize));
         var expectedCandidates = GetCandidateDtos(candidates);
 
         var mapperMock = new Mock<IMapper>();
@@ -31,18 +39,19 @@ public class CandidateServiceTests
         optionsMock.Setup(x => x.CurrentValue).Returns(options);
 
         var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
-        candidatesDataAccessMock.Setup(x => x.GetCandidatesAsync(It.Is<int>(x => x == ((page - 1) * options.PageSize)),
-                                                                It.Is<int>(x => x == options.PageSize))).ReturnsAsync(candidates);
+
+        candidatesDataAccessMock.Setup(x => x.GetCandidatesAsync(It.Is<int>(x => x == ((p - 1) * pSize)),
+                                                                It.Is<int>(x => x == pSize))).ReturnsAsync(candidates);
 
         var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
 
         // Act
-        var result = await candidatesService.GetCandidatesAsync(page);
+        var result = await candidatesService.GetCandidatesAsync(page, pageSize);
 
         // Assert
         Assert.Equal(expectedCandidates, result);
-        candidatesDataAccessMock.Verify(x => x.GetCandidatesAsync(It.Is<int>(x => x == ((page - 1) * options.PageSize)),
-                                                                  It.Is<int>(x => x == options.PageSize)), Times.Once);
+        candidatesDataAccessMock.Verify(x => x.GetCandidatesAsync(It.Is<int>(x => x == ((p - 1) * pSize)),
+                                                                  It.Is<int>(x => x == pSize)), Times.Once);
         candidatesDataAccessMock.VerifyNoOtherCalls();
         mapperMock.Verify(x => x.Map<IEnumerable<CandidateDto>>(It.Is<IEnumerable<Candidate>>(x =>
                                     Enumerable.SequenceEqual<Candidate>(x, candidates))), Times.Once);
@@ -78,6 +87,21 @@ public class CandidateServiceTests
         candidatesDataAccessMock.VerifyNoOtherCalls();
         mapperMock.Verify(x => x.Map<CandidateDto>(It.Is<Candidate>(x => x.Equals(candidate))), Times.Once);
         mapperMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task GetCandidateAsync_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        var email = string.Empty;
+        var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
+        var mapperMock = new Mock<IMapper>();
+        var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
+        var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await candidatesService.GetCandidateAsync(email));
+        Assert.Equal("Value cannot be null. (Parameter 'email')", exception.Message);
+        candidatesDataAccessMock.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -141,6 +165,47 @@ public class CandidateServiceTests
     }
 
     [Fact]
+    public async Task CreateUpdateCandidateAsync_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        CandidateDto candidate = null;
+        var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
+        var mapperMock = new Mock<IMapper>();
+        var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
+        var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await candidatesService.CreateUpdateCandidateAsync(candidate));
+        Assert.Equal("Value cannot be null. (Parameter 'candidate')", exception.Message);
+        candidatesDataAccessMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task CreateUpdateCandidateAsync_ShouldThrowValidationsException()
+    {
+        // Arrange
+        CandidateDto candidate = new CandidateDto
+        {
+            Email = "test_test.com",
+            FirstName = null,
+            LastName = null,
+            PhoneNumber = "abcdef",
+            Comment = null,
+            GitHubUrl = "github.com/test",
+            LinkedInUrl = "linkedin.com/in/test",
+            TimeInterval = new TimeIntervalDto(new TimeOnly(17, 0), new TimeOnly(9, 0))
+        };
+        var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
+        var mapperMock = new Mock<IMapper>();
+        var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
+        var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ValidationsException>(async () => await candidatesService.CreateUpdateCandidateAsync(candidate));
+        Assert.Equal("Candidate validation errors", exception.Message);
+        Assert.Equal(8, exception.ValidationResults.Count());
+        candidatesDataAccessMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
     public async Task DeleteCandidateAsync_ShouldDeleteCandidate()
     {
         // Arrange
@@ -155,6 +220,21 @@ public class CandidateServiceTests
         await candidatesService.DeleteCandidateAsync(email);
         // Assert
         candidatesDataAccessMock.Verify(x => x.DeleteCandidateAsync(It.Is<string>(x => x == email)), Times.Once);
+        candidatesDataAccessMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task DeleteCandidateAsync_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        var email = string.Empty;
+        var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
+        var mapperMock = new Mock<IMapper>();
+        var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
+        var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await candidatesService.DeleteCandidateAsync(email));
+        Assert.Equal("Value cannot be null. (Parameter 'email')", exception.Message);
         candidatesDataAccessMock.VerifyNoOtherCalls();
     }
 
@@ -176,6 +256,21 @@ public class CandidateServiceTests
         // Assert
         Assert.Equal(isExist, result);
         candidatesDataAccessMock.Verify(x => x.IsCandidateExist(It.Is<string>(x => x == email)), Times.Once);
+        candidatesDataAccessMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task IsCandidateExist_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        var email = string.Empty;
+        var candidatesDataAccessMock = new Mock<ICandidatesDataAccess>();
+        var mapperMock = new Mock<IMapper>();
+        var optionsMock = new Mock<IOptionsMonitor<CandidatesOptions>>();
+        var candidatesService = new CandidatesService(mapperMock.Object, optionsMock.Object, candidatesDataAccessMock.Object);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await candidatesService.IsCandidateExist(email));
+        Assert.Equal("Value cannot be null. (Parameter 'email')", exception.Message);
         candidatesDataAccessMock.VerifyNoOtherCalls();
     }
 

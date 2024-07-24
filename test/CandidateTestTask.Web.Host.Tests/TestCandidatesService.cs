@@ -20,7 +20,7 @@ public class TestCandidatesService : ICandidatesService
         throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<CandidateDto>> GetCandidatesAsync(int page)
+    public async Task<IEnumerable<CandidateDto>> GetCandidatesAsync(int page, int? pageSize)
     {
         throw new NotImplementedException();
     }
