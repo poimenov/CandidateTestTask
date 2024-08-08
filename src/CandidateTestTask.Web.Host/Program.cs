@@ -10,7 +10,26 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCandidatesConfiguration(builder.Configuration)
                 .AddCandidatesService();
 
+
+// App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
+var origins = (builder.Configuration["App:CorsOrigins"] ?? "http://localhost:5173")
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+// Configure CORS for react UI
+var defaultCorsPolicyName = "localhost";
+builder.Services.AddCors(
+    options => options.AddPolicy(
+        defaultCorsPolicyName,
+        builder => builder
+            .WithOrigins(origins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+    )
+);
+
 var app = builder.Build();
+app.UseCors(defaultCorsPolicyName);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

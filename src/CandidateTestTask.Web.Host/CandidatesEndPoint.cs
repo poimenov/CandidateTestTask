@@ -17,10 +17,15 @@ public static class CandidatesEndPoint
         return group;
     }
 
-    public static async Task<Ok<IEnumerable<CandidateDto>>> GetCandidatesAsync(int page, int? pageSize, ICandidatesService candidates)
+    public static async Task<Ok<CandidatesResult>> GetCandidatesAsync(int page, int? pageSize, ICandidatesService candidates)
     {
-        var result = await candidates.GetCandidatesAsync(((page < 0) ? 0 : page), pageSize);
-        return TypedResults.Ok(result);
+        var retVal = new CandidatesResult()
+        {
+            CandidateDtos = await candidates.GetCandidatesAsync(((page < 1) ? 1 : page), pageSize),
+            TotalCount = await candidates.GetCountOfCandidatesAsync()
+        };
+
+        return TypedResults.Ok(retVal);
     }
 
     public static async Task<Ok<int>> GetCountOfCandidatesAsync(ICandidatesService candidates)

@@ -12,41 +12,47 @@ public class CandidatesEndPointTestsTests
     public async Task GetCandidatesAsync__WhithPageSize_ShouldReturnCandidates()
     {
         // Arrange
+        var count = 40;
         var page = 1;
         int? pageSize = 20;
         var expected = GetCandidates(pageSize.Value);
         var candidatesServiceMock = new Mock<ICandidatesService>();
+        candidatesServiceMock.Setup(x => x.GetCountOfCandidatesAsync()).ReturnsAsync(count);
         candidatesServiceMock.Setup(x => x.GetCandidatesAsync(It.Is<int>(x => x == page), It.Is<int?>(x => x == pageSize))).ReturnsAsync(expected);
         // Act
         var result = await CandidatesEndPoint.GetCandidatesAsync(page, pageSize, candidatesServiceMock.Object);
         // Assert
+        candidatesServiceMock.Verify(x => x.GetCountOfCandidatesAsync(), Times.Once);
         candidatesServiceMock.Verify(x => x.GetCandidatesAsync(It.Is<int>(x => x == page), It.Is<int?>(x => x == pageSize)), Times.Once);
         candidatesServiceMock.VerifyNoOtherCalls();
-        Assert.IsType<Ok<IEnumerable<CandidateDto>>>(result);
+        Assert.IsType<Ok<CandidatesResult>>(result);
         Assert.NotNull(result.Value);
-        Assert.NotEmpty(result.Value);
-        Assert.Equal(expected, result.Value);
+        Assert.Equal(count, result.Value.TotalCount);
+        Assert.Equal(expected, result.Value.CandidateDtos);
     }
 
     [Fact]
     public async Task GetCandidatesAsync__WhithOutPageSize_ShouldReturnCandidates()
     {
         // Arrange
+        var count = 20;
         var page = 1;
         int? pageSize = 10;
         var expected = GetCandidates(pageSize.Value);
         var candidatesServiceMock = new Mock<ICandidatesService>();
+        candidatesServiceMock.Setup(x => x.GetCountOfCandidatesAsync()).ReturnsAsync(count);
         candidatesServiceMock.Setup(x => x.GetCandidatesAsync(It.Is<int>(x => x == page), null)).ReturnsAsync(expected);
         // Act
         var result = await CandidatesEndPoint.GetCandidatesAsync(page, null, candidatesServiceMock.Object);
         // Assert
+        candidatesServiceMock.Verify(x => x.GetCountOfCandidatesAsync(), Times.Once);
         candidatesServiceMock.Verify(x => x.GetCandidatesAsync(It.Is<int>(x => x == page), It.Is<int?>(x => x == null)), Times.Once);
         candidatesServiceMock.VerifyNoOtherCalls();
-        Assert.IsType<Ok<IEnumerable<CandidateDto>>>(result);
+        Assert.IsType<Ok<CandidatesResult>>(result);
         Assert.NotNull(result.Value);
-        Assert.NotEmpty(result.Value);
-        Assert.Equal(expected, result.Value);
-    }    
+        Assert.Equal(count, result.Value.TotalCount);
+        Assert.Equal(expected, result.Value.CandidateDtos);
+    }
 
     [Fact]
     public async Task GetCountOfCandidatesAsync_ShouldReturnCount()
