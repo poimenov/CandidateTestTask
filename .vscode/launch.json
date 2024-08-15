@@ -1,8 +1,16 @@
 {
     "version": "0.2.0",
+	"compounds": [
+		{
+			"name": "Server/Client",
+			"configurations": ["Server", "Client"],
+            "preLaunchTask": "serverBuild",
+            "stopAll": true
+		}		
+	],    
     "configurations": [
         {
-            "name": "CandidateTestTask.Migrator Launch (console)",
+            "name": "Migrator (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "consoleBuild",
@@ -16,7 +24,7 @@
             }
         },
         {
-            "name": "CandidateTestTask.Migrator Launch with fake data (console)",
+            "name": "Migrator with fake data (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "consoleBuild",
@@ -32,10 +40,40 @@
             }
         },
         {
-            "name": "C#: CandidateTestTask.Web.Host [Default Configuration]",
+            "name": "Server (swagger)",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}/src/CandidateTestTask.Web.Host/CandidateTestTask.Web.Host.csproj"
-        }
+        },
+        {
+            "name": "Server",
+            "type": "coreclr",
+            "request": "launch",            
+            "program": "${workspaceFolder}/src/CandidateTestTask.Web.Host/bin/Debug/net8.0/CandidateTestTask.Web.Host.dll",
+            "cwd": "${workspaceFolder}/src/CandidateTestTask.Web.Host",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5062"
+            },            
+            "stopAtEntry": false
+        },        
+        {
+			"name": "Client",		
+			"request": "launch",
+			"type": "node",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [ "run", "start" ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+			"cwd": "${workspaceFolder}/src/candidate-test-task-client",
+            "serverReadyAction": {
+                "action": "debugWithChrome",
+                "pattern": "Local:\\s+http://localhost:([0-9]+)/",
+                "uriFormat": "http://localhost:%s",
+                "webRoot": "${workspaceFolder}/src/candidate-test-task-client",
+                "killOnServerStop": true
+            }
+          },                      
     ]
 }
