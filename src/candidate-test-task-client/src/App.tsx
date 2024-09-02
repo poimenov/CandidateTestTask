@@ -1,21 +1,24 @@
-import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import CandidatesPage from './components/candidatesPage'
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import queryClient from './queryClient';
+import Home from './pages/Home';
+import AddCandidate from './pages/AddCandidate';
+import EditCandidate from './pages/EditCandidate';
 
-function App() {
-  const queryClient = new QueryClient();
+const App: React.FC = () => {
   return (
-    <>
-      <script type="module" src="https://cdn.skypack.dev/twind/shim"></script>
-      <QueryClientProvider client={queryClient}>
-        <CandidatesPage />
-      </QueryClientProvider>
-    </>
-  )
-}
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/add" element={<AddCandidate />} />
+          <Route path="/edit/:email" element={<EditCandidate />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
+  );
+};
 
-export default App
+export default App;
+

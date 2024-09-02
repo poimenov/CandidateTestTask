@@ -1,7 +1,9 @@
 import React from 'react';
-import { getCandidates } from "../core/service";
+import { getCandidates, deleteOne } from "../core/service";
+import queryClient from '../queryClient';
 import {
   keepPreviousData,
+  useMutation,
   useQuery,
 } from '@tanstack/react-query';
 import {
@@ -13,80 +15,74 @@ import {
 } from '@tanstack/react-table';
 import { CandidateModel } from '../core/models/candidate.model';
 import { Table as BTable } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-function CandidatesPage() {
+function CandidatesTable() {
+  const deleteMutation = useMutation(
+    {
+    mutationFn: (email: string) => deleteOne(email),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['candidates']});
+      },
+    }
+  );
 
   const columns = React.useMemo<ColumnDef<CandidateModel>[]>(
     () => [
       {
-        header: 'Main',
-        footer: props => props.column.id,
-        columns: [
-          {
-            accessorFn: row => row.email,
-            id: 'email',
-            cell: info => info.getValue(),
-            header: () => <span>Email</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorKey: 'firstName',
-            cell: info => info.getValue(),
-            header: () => <span>First Name</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorKey: 'lastName',
-            cell: info => info.getValue(),
-            header: () => <span>Last Name</span>,
-            footer: props => props.column.id,
-          },
-        ],
+        accessorFn: row => row.email,
+        id: 'email',
+        cell: info => <a href={'mailto:' + info.getValue()}>{String(info.getValue())}</a>,
+        header: () => <span>Email</span>,
       },
       {
-        header: 'Info',
-        footer: props => props.column.id,
-        columns: [
-          {
-            accessorKey: 'phoneNumber',
-            cell: info => info.getValue(),
-            header: () => <span>Phone Number</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorKey: 'linkedInUrl',
-            cell: info => info.getValue(),
-            header: () => <span>LinkedIn Url</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorKey: 'gitHubUrl',
-            cell: info => info.getValue(),
-            header: () => <span>GitHub Url</span>,
-            footer: props => props.column.id,
-          },
-        ],
+        accessorKey: 'firstName',
+        cell: info => info.getValue(),
+        header: () => <span>First Name</span>,
       },
       {
-        header: 'Time Interval',
-        footer: props => props.column.id,
-        columns: [
-          {
-            accessorKey: 'startTime',
-            cell: info => info.getValue(),
-            header: () => <span>Start Time</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorKey: 'endTime',
-            cell: info => info.getValue(),
-            header: () => <span>End Time</span>,
-            footer: props => props.column.id,
-          },
-        ],
-      }
+        accessorKey: 'lastName',
+        cell: info => info.getValue(),
+        header: () => <span>Last Name</span>,
+      },
+      {
+        accessorKey: 'phoneNumber',
+        cell: info => info.getValue(),
+        header: () => <span>Phone Number</span>,
+      },
+      {
+        accessorKey: 'linkedInUrl',
+        cell: info => <a href={info.getValue() as string} target='_blank'>{info.getValue() as string}</a>,
+        header: () => <span>LinkedIn Url</span>,
+      },
+      {
+        accessorKey: 'gitHubUrl',
+        cell: info => <a href={info.getValue() as string} target='_blank'>{info.getValue() as string}</a>,
+        header: () => <span>GitHub Url</span>,
+      },
+      {
+        accessorKey: 'timeInterval.startTime',
+        cell: info => (info.getValue() as string).split('.')[0],        
+        header: () => <span>Start Time</span>,
+      },
+      {
+        accessorKey: 'timeInterval.endTime',
+        cell: info => (info.getValue() as string).split('.')[0],
+        header: () => <span>End Time</span>,
+      },
+      {
+        accessorFn: (row) => row,
+        id: 'actions',
+        cell: ({ row }: { row: { original: CandidateModel } }) => (
+          <div>
+            <Link to={`/edit/${row.original.email}`}>Edit</Link>
+            <button onClick={() => deleteMutation.mutate(row.original.email)}>Delete</button>
+          </div>
+        ),
+        header: () => '',
+      },      
     ],
-    []
+    [deleteMutation]
   )
 
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -95,9 +91,9 @@ function CandidatesPage() {
   })
 
   const dataQuery = useQuery({
-    queryKey: ['data', pagination],
+    queryKey: ['candidates', pagination],
     queryFn: () => getCandidates(pagination),
-    placeholderData: keepPreviousData, // don't have 0 rows flash while changing pages/loading next page
+    placeholderData: keepPreviousData, 
   })
 
   const defaultData = React.useMemo(() => [], [])
@@ -106,21 +102,20 @@ function CandidatesPage() {
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
     columns,
-    //pageCount: dataQuery.data?.pageCount ?? -1, //you can now pass in `rowCount` instead of pageCount and `pageCount` will be calculated internally (new in v8.13.0)
-    rowCount: dataQuery.data?.rowCount, // new in v8.13.0 - alternatively, just pass in `pageCount` directly
+    rowCount: dataQuery.data?.rowCount,
     state: {
       pagination,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true, //we're doing manual "server-side" pagination
-    //getPaginationRowModel: getPaginationRowModel(), // If only doing manual pagination, you don't need this
+    manualPagination: true, 
     debugTable: true,
   })
 
 
   return (
     <div className="p-2">
+      <Link to={`/add`}>Create new</Link>
       <BTable striped bordered hover responsive size="sm">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
@@ -164,10 +159,10 @@ function CandidatesPage() {
       <div className="h-2" />
       <div className="flex items-center gap-2">
         <ul className="pagination justify-content-center">
-          <li className="page-item"><a className={`page-link ${table.getCanPreviousPage() ? "" : "disabled"}`} href="#" onClick={() => table.firstPage()}>&laquo;</a></li>
-          <li className="page-item"><a className={`page-link ${table.getCanPreviousPage() ? "" : "disabled"}`} href="#" onClick={() => table.previousPage()}>&lsaquo; </a></li>
-          <li className="page-item"><a className={`page-link ${table.getCanNextPage() ? "" : "disabled"}`} href="#" onClick={() => table.nextPage()}>&rsaquo;</a></li>
-          <li className="page-item"><a className={`page-link ${table.getCanNextPage() ? "" : "disabled"}`} href="#" onClick={() => table.lastPage()}>&raquo;</a></li>
+          <li className="page-item"><a className={`page-link ${table.getCanPreviousPage() ? "" : "disabled"}`} href="#" onClick={() => table.firstPage()}>«</a></li>
+          <li className="page-item"><a className={`page-link ${table.getCanPreviousPage() ? "" : "disabled"}`} href="#" onClick={() => table.previousPage()}>‹ </a></li>
+          <li className="page-item"><a className={`page-link ${table.getCanNextPage() ? "" : "disabled"}`} href="#" onClick={() => table.nextPage()}>›</a></li>
+          <li className="page-item"><a className={`page-link ${table.getCanNextPage() ? "" : "disabled"}`} href="#" onClick={() => table.lastPage()}>»</a></li>
           <li className="page-item">
             <span className="page-link">
               <span>Page </span>
@@ -220,5 +215,4 @@ function CandidatesPage() {
 
   )
 }
-
-export default CandidatesPage
+export default CandidatesTable
