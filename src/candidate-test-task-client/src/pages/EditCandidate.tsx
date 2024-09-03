@@ -1,8 +1,8 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CandidateModel } from '../core/models/candidate.model';
 import CandidateForm from '../components/candidateForm';
+import { getOne } from '../core/service';
 
 const EditCandidate: React.FC = () => {
   const { email } = useParams<{ email: string }>();
@@ -10,9 +10,9 @@ const EditCandidate: React.FC = () => {
   const [candidate, setCandidate] = useState<CandidateModel | null>(null);
 
   useEffect(() => {
-    axios.get(`/candidate/${email}`)
-      .then(response => setCandidate(response.data))
-      .catch(error => console.error(error));
+    if (email) {
+      getOne(email).then(setCandidate).catch(error => console.error(error));
+    }
   }, [email]);
 
   const handleSubmit = () => {

@@ -5,6 +5,7 @@ export interface CandidateModel {
     phoneNumber: string;
 	linkedInUrl:  string;
     gitHubUrl: string;
+	comment: string;
 	timeInterval: {
 		startTime: string;
 		endTime: string;

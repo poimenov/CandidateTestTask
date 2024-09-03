@@ -1,4 +1,6 @@
 import React from 'react';
+import editImage from '../assets/edit-button-svgrepo-com.svg'
+import deleteImage from '../assets/delete-button-svgrepo-com.svg'
 import { getCandidates, deleteOne } from "../core/service";
 import queryClient from '../queryClient';
 import {
@@ -75,8 +77,12 @@ function CandidatesTable() {
         id: 'actions',
         cell: ({ row }: { row: { original: CandidateModel } }) => (
           <div>
-            <Link to={`/edit/${row.original.email}`}>Edit</Link>
-            <button onClick={() => deleteMutation.mutate(row.original.email)}>Delete</button>
+            <Link className='m-1' to={`/edit/${row.original.email}`}>
+              <img src={editImage} title='edit' alt='edit' />
+            </Link>
+            <Link className='m-1' to="#" onClick={() => { if(confirm("You are about to remove the candidate. Continue?")) deleteMutation.mutate(row.original.email)}}>
+              <img src={deleteImage} title='delete' alt='delete' />
+            </Link>
           </div>
         ),
         header: () => '',
