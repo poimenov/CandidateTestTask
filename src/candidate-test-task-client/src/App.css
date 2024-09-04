@@ -9,3 +9,10 @@
     background-color: white;
     color: black;
 }
+
+td > a {
+  width: 160px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

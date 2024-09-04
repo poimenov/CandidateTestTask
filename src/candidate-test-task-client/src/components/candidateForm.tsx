@@ -15,6 +15,15 @@ interface CandidateFormProps {
 const CandidateForm: React.FC<CandidateFormProps> = ({ candidate, onSubmit }) => {
   const originalCandidate = candidate;
 
+  const getTime = (time: string) => {
+    if (time === '') {
+      return '00:00';
+    }
+
+    const arrTime = time.split(':');
+    return `${arrTime[0]}:${arrTime[1]}`;
+  }
+
   const [formData, setFormData] = useState({
     email: candidate?.email || '',
     firstName: candidate?.firstName || '',
@@ -34,7 +43,7 @@ const CandidateForm: React.FC<CandidateFormProps> = ({ candidate, onSubmit }) =>
   const mutation = useMutation(
     {
         mutationFn: (newCandidate: CandidateModel) => postOne(newCandidate),
-        onSuccess: () => {
+        onSuccess: () => {          
           queryClient.invalidateQueries({ queryKey: ['candidates'] })
           onSubmit()
         },
@@ -88,15 +97,6 @@ const CandidateForm: React.FC<CandidateFormProps> = ({ candidate, onSubmit }) =>
       endTime: getTime(originalCandidate?.timeInterval?.endTime || ''),
     });
   };
-
-  function getTime(time: string) {
-    if (time === '') {
-      return '00:00';
-    }
-
-    const arrTime = time.split(':');
-    return `${arrTime[0]}:${arrTime[1]}`;
-  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
@@ -156,10 +156,12 @@ const CandidateForm: React.FC<CandidateFormProps> = ({ candidate, onSubmit }) =>
         <Form.Control as="textarea" rows={3} name="comment" id="comment" className="form-control" required value={formData.comment} onChange={handleChange} />
       </Form.Group>
       <Row xs="4">
+        <Button className='m-1' type="reset" onClick={() => location.replace("../")}>Cancel</Button>
         <Button className='m-1' type="reset" onClick={handleReset}>Reset</Button>
         <Button className='m-1' variant='primary' type="submit" disabled={!enabled}>Submit</Button>      
       </Row>     
     </Form>
   );
 };
+
 export default CandidateForm;

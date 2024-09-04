@@ -34,7 +34,7 @@ function CandidatesTable() {
       {
         accessorFn: row => row.email,
         id: 'email',
-        cell: info => <a href={'mailto:' + info.getValue()}>{String(info.getValue())}</a>,
+        cell: info => <a href={'mailto:' + info.getValue()} title={String(info.getValue())}>{String(info.getValue())}</a>,
         header: () => <span>Email</span>,
       },
       {
@@ -54,29 +54,29 @@ function CandidatesTable() {
       },
       {
         accessorKey: 'linkedInUrl',
-        cell: info => <a href={info.getValue() as string} target='_blank'>{info.getValue() as string}</a>,
+        cell: info => <a href={String(info.getValue())} title={String(info.getValue())} target='_blank'>{String(info.getValue())}</a>,
         header: () => <span>LinkedIn Url</span>,
       },
       {
         accessorKey: 'gitHubUrl',
-        cell: info => <a href={info.getValue() as string} target='_blank'>{info.getValue() as string}</a>,
+        cell: info => <a href={String(info.getValue())} title={String(info.getValue())} target='_blank'>{String(info.getValue())}</a>,
         header: () => <span>GitHub Url</span>,
       },
       {
         accessorKey: 'timeInterval.startTime',
-        cell: info => (info.getValue() as string).split('.')[0],        
+        cell: info => (String(info.getValue())).split('.')[0],        
         header: () => <span>Start Time</span>,
       },
       {
         accessorKey: 'timeInterval.endTime',
-        cell: info => (info.getValue() as string).split('.')[0],
+        cell: info => (String(info.getValue())).split('.')[0],
         header: () => <span>End Time</span>,
       },
       {
         accessorFn: (row) => row,
         id: 'actions',
         cell: ({ row }: { row: { original: CandidateModel } }) => (
-          <div>
+          <div className='text-nowrap'>
             <Link className='m-1' to={`/edit/${row.original.email}`}>
               <img src={editImage} title='edit' alt='edit' />
             </Link>
@@ -117,7 +117,6 @@ function CandidatesTable() {
     manualPagination: true, 
     debugTable: true,
   })
-
 
   return (
     <div className="p-2">
