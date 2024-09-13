@@ -1,4 +1,4 @@
-using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Core.Candidates.Dto;
 
 namespace CandidateTestTask.Web.Host;
 

@@ -1,6 +1,6 @@
-using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Core.Candidates.Dto;
 
-namespace CandidateTestTask.Application.Candidates;
+namespace CandidateTestTask.Core.Candidates;
 
 public interface ICandidatesService
 {

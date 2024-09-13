@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Core.Candidates.Dto;
 using Microsoft.AspNetCore.Http;
 
 namespace CandidateTestTask.Web.Host.Tests;

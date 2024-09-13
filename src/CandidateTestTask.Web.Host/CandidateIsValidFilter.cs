@@ -1,5 +1,7 @@
-using CandidateTestTask.Application.Candidates.Dto;
+
 using CandidateTestTask.Application.Extensions;
+using CandidateTestTask.Core.Candidates.Dto;
+using CandidateTestTask.Core.Extensions;
 
 namespace CandidateTestTask.Web.Host;
 

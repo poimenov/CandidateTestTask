@@ -1,10 +1,10 @@
 using AutoMapper;
 using Bogus;
 using CandidateTestTask.Application.Candidates;
-using CandidateTestTask.Application.Candidates.Dto;
 using CandidateTestTask.Application.Exceptions;
 using CandidateTestTask.Core;
 using CandidateTestTask.Core.Candidates;
+using CandidateTestTask.Core.Candidates.Dto;
 using Microsoft.Extensions.Options;
 using Moq;
 

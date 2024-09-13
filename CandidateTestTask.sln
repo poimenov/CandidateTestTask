@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandidateTestTask.Web.Host.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandidateTestTask.DataAccess.Tests", "test\CandidateTestTask.DataAccess.Tests\CandidateTestTask.DataAccess.Tests.csproj", "{5E0CDC8C-E092-4921-801C-E42D3BB82507}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandidateTestTask.Client", "src\CandidateTestTask.Client\CandidateTestTask.Client.csproj", "{D62FC360-CE37-4594-8DD6-AD810DE00EE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{5E0CDC8C-E092-4921-801C-E42D3BB82507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E0CDC8C-E092-4921-801C-E42D3BB82507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E0CDC8C-E092-4921-801C-E42D3BB82507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D62FC360-CE37-4594-8DD6-AD810DE00EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D62FC360-CE37-4594-8DD6-AD810DE00EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D62FC360-CE37-4594-8DD6-AD810DE00EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D62FC360-CE37-4594-8DD6-AD810DE00EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7A74E9F6-53F3-4B94-9938-1F39F51BE51A} = {46DC154F-2A72-4085-92C8-B1B5B1FC5CB9}
@@ -74,5 +80,6 @@ Global
 		{0A4F8A7B-344B-43B0-92C7-CB208A41F933} = {FB0436BA-29D3-40B3-9866-EF7BEF2C83D9}
 		{E2A0CECE-3C75-4CAD-A3CF-4C006C208EBC} = {FB0436BA-29D3-40B3-9866-EF7BEF2C83D9}
 		{5E0CDC8C-E092-4921-801C-E42D3BB82507} = {FB0436BA-29D3-40B3-9866-EF7BEF2C83D9}
+		{D62FC360-CE37-4594-8DD6-AD810DE00EE5} = {46DC154F-2A72-4085-92C8-B1B5B1FC5CB9}
 	EndGlobalSection
 EndGlobal

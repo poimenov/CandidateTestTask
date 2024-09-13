@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using CandidateTestTask.Application.DataAnnotations;
+using CandidateTestTask.Core.DataAnnotations;
 
-namespace CandidateTestTask.Application.Candidates.Dto;
+namespace CandidateTestTask.Core.Candidates.Dto;
 
 public class CandidateDto
 {

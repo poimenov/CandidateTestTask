@@ -1,6 +1,6 @@
 using AutoMapper;
-using CandidateTestTask.Application.Candidates.Dto;
 using CandidateTestTask.Core.Candidates;
+using CandidateTestTask.Core.Candidates.Dto;
 
 namespace CandidateTestTask.Application;
 

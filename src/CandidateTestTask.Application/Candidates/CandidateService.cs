@@ -1,10 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using CandidateTestTask.Application.Candidates.Dto;
-using CandidateTestTask.Application.Exceptions;
-using CandidateTestTask.Application.Extensions;
+using CandidateTestTask.Core.Extensions;
 using CandidateTestTask.Core;
 using CandidateTestTask.Core.Candidates;
+using CandidateTestTask.Core.Candidates.Dto;
 using Microsoft.Extensions.Options;
+using CandidateTestTask.Application.Exceptions;
 
 namespace CandidateTestTask.Application.Candidates;
 

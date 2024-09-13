@@ -1,6 +1,6 @@
 using Bogus;
-using CandidateTestTask.Application.Candidates;
-using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Core.Candidates;
+using CandidateTestTask.Core.Candidates.Dto;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 

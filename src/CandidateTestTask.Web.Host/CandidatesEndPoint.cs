@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using CandidateTestTask.Application.Candidates;
-using CandidateTestTask.Application.Candidates.Dto;
+using CandidateTestTask.Core.Candidates;
+using CandidateTestTask.Core.Candidates.Dto;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CandidateTestTask.Web.Host;

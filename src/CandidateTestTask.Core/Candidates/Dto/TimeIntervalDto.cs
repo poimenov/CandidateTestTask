@@ -1,4 +1,4 @@
-namespace CandidateTestTask.Application.Candidates.Dto;
+namespace CandidateTestTask.Core.Candidates.Dto;
 
 public class TimeIntervalDto
 {

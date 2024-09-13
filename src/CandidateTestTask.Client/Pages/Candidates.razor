@@ -1,0 +1,132 @@
+@page "/candidates"
+@using CandidateTestTask.Client.Services
+@using CandidateTestTask.Core.Candidates.Dto
+@using System.Linq
+@inject ICandidateService CandidateService
+
+<PageTitle>Candidates</PageTitle>
+
+<h1>Candidates</h1>
+
+@if (candidates == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-sm table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Phone Number</th>
+            <th>LinkedIn Url</th>
+            <th>GitHub Url</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var candidate in candidates)
+            {
+                <tr>
+                    <td><a href="mailto:@candidate.Email">@candidate.Email</a></td>
+                    <td>@candidate.FirstName</td>
+                    <td>@candidate.LastName</td>
+                    <td>@candidate.PhoneNumber</td>
+                    <td><a href="@candidate.LinkedInUrl" target="_blank">@candidate.LinkedInUrl</a></td>
+                    <td><a href="@candidate.GitHubUrl" target="_blank">@candidate.GitHubUrl</a></td>
+                    <td>@candidate.TimeInterval?.StartTime</td>
+                    <td>@candidate.TimeInterval?.EndTime</td>
+                    <td>
+                        <div class="text-nowrap">
+                            <a class="m-1" href="/edit/@candidate.Email">
+                                <img src="/images/edit-button-svgrepo-com.svg" title="edit" alt="edit">
+                            </a>
+                            <a class="m-1" href="#">
+                                <img src="/images/delete-button-svgrepo-com.svg" title="delete" alt="delete">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <ul class="pagination justify-content-center">
+        <li class="page-item"><span class="page-link" @onclick="ToFirstPageAsync">«</span></li>
+        <li class="page-item"><span class="page-link" @onclick="ToPrevPageAsync">‹ </span></li>
+        <li class="page-item"><span class="page-link" @onclick="ToNextPageAsync">›</span></li>
+        <li class="page-item"><span class="page-link" @onclick="ToLastPageAsync">»</span></li>
+        <li class="page-item"><span class="page-link"><span>Page </span><strong>@pageNumber</strong><span> of
+                </span><strong>@totalPages</strong></span></li>
+        <li class="page-item"><span class="page-link"><span>Go to page: </span><input type="number"
+                    class="border rounded h-full w-16 text-center" value="@pageNumber" min="1" max="@totalPages"
+                    @onchange="LoadCandidatesAsync" style="width: 50px; height: 20px;"></span></li>
+        <li class="page-item">
+            <span class="page-link">
+                <select class="border rounded h-full w-16 text-center" @bind="pageSize" @bind:after="ToFirstPageAsync">
+                    @foreach (var size in pageSizes)
+                    {
+                        <option value="@size">Show @size</option>
+                    }
+                </select>
+            </span>
+        </li>
+    </ul>
+}
+
+@code {
+    private CandidateDto[]? candidates;
+    private int[] pageSizes = { 10, 20, 30, 40, 50 };
+    private string? serviceEndpoint;
+    private int pageNumber = 1;
+    private string? selectedPageSize;
+    private int pageSize;
+    private int totalCount;
+    private int totalPages;
+    protected override async Task OnInitializedAsync()
+    {
+        pageSize = pageSizes.First();
+        candidates = Array.Empty<CandidateDto>();
+        await LoadCandidatesAsync();
+    }
+
+    public async Task LoadCandidatesAsync()
+    {
+        var responce = await CandidateService.GetCandidatesAsync(pageNumber, pageSize);
+        if (responce != null)
+        {
+            candidates = responce.CandidateDtos;
+            totalCount = responce.TotalCount;
+            totalPages = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(totalCount) / Convert.ToDecimal(pageSize)));
+        }
+    }
+
+    public async Task ToFirstPageAsync()
+    {
+        pageNumber = 1;
+        await LoadCandidatesAsync();
+    }
+
+    public async Task ToPrevPageAsync()
+    {
+        pageNumber = (pageNumber > 1) ? pageNumber - 1 : 1;
+        await LoadCandidatesAsync();
+    }
+
+    public async Task ToNextPageAsync()
+    {
+        pageNumber = (pageNumber < totalPages) ? pageNumber + 1 : totalPages;
+        await LoadCandidatesAsync();
+    }
+
+    public async Task ToLastPageAsync()
+    {
+        pageNumber = totalPages;
+        await LoadCandidatesAsync();
+    }
+
+}
