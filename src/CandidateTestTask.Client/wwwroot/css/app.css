@@ -114,3 +114,7 @@ td > a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+a:hover {
+    cursor: pointer;
+}

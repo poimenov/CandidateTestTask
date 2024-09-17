@@ -1,8 +1,9 @@
 @page "/candidates"
+@using System.Linq
 @using CandidateTestTask.Client.Services
 @using CandidateTestTask.Core.Candidates.Dto
-@using System.Linq
 @inject ICandidateService CandidateService
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Candidates</PageTitle>
 
@@ -14,6 +15,7 @@
 }
 else
 {
+    <a href="/candidate/add">Add Candidate</a>
     <table class="table table-sm table-striped table-bordered table-hover">
     <thead>
         <tr>
@@ -42,10 +44,10 @@ else
                     <td>@candidate.TimeInterval?.EndTime</td>
                     <td>
                         <div class="text-nowrap">
-                            <a class="m-1" href="/edit/@candidate.Email">
+                            <a class="m-1" href="/candidate/edit/@candidate.Email">
                                 <img src="/images/edit-button-svgrepo-com.svg" title="edit" alt="edit">
                             </a>
-                            <a class="m-1" href="#">
+                            <a class="m-1" @onclick="() => DeleteCandidateAsync(candidate.Email)">
                                 <img src="/images/delete-button-svgrepo-com.svg" title="delete" alt="delete">
                             </a>
                         </div>
@@ -56,15 +58,15 @@ else
     </table>
 
     <ul class="pagination justify-content-center">
-        <li class="page-item"><span class="page-link" @onclick="ToFirstPageAsync">«</span></li>
-        <li class="page-item"><span class="page-link" @onclick="ToPrevPageAsync">‹ </span></li>
-        <li class="page-item"><span class="page-link" @onclick="ToNextPageAsync">›</span></li>
-        <li class="page-item"><span class="page-link" @onclick="ToLastPageAsync">»</span></li>
+        <li class="page-item"><a class="page-link" @onclick="ToFirstPageAsync">«</a></li>
+        <li class="page-item"><a class="page-link" @onclick="ToPrevPageAsync">‹ </a></li>
+        <li class="page-item"><a class="page-link" @onclick="ToNextPageAsync">›</a></li>
+        <li class="page-item"><a class="page-link" @onclick="ToLastPageAsync">»</a></li>
         <li class="page-item"><span class="page-link"><span>Page </span><strong>@pageNumber</strong><span> of
                 </span><strong>@totalPages</strong></span></li>
         <li class="page-item"><span class="page-link"><span>Go to page: </span><input type="number"
-                    class="border rounded h-full w-16 text-center" value="@pageNumber" min="1" max="@totalPages"
-                    @onchange="LoadCandidatesAsync" style="width: 50px; height: 20px;"></span></li>
+                    class="border rounded h-full w-16 text-center" @bind="pageNumber" min="1" max="@totalPages"
+                    @bind:after="LoadCandidatesAsync" style="width: 50px; height: 20px;"></span></li>
         <li class="page-item">
             <span class="page-link">
                 <select class="border rounded h-full w-16 text-center" @bind="pageSize" @bind:after="ToFirstPageAsync">
@@ -102,6 +104,16 @@ else
             candidates = responce.CandidateDtos;
             totalCount = responce.TotalCount;
             totalPages = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(totalCount) / Convert.ToDecimal(pageSize)));
+        }
+    }
+
+    public async Task DeleteCandidateAsync(string email)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            await CandidateService.DeleteCandidateAsync(email);
+            await LoadCandidatesAsync();
         }
     }
 

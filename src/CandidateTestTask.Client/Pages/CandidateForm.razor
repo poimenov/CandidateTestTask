@@ -1,0 +1,101 @@
+@using System.Linq
+@using CandidateTestTask.Client.Services
+@using CandidateTestTask.Core.Candidates.Dto
+@inject ICandidateService CandidateService
+@inject NavigationManager NavigationManager
+
+@using CandidateTestTask.Core.Extensions
+@using Microsoft.AspNetCore.Components.Forms
+
+@if (Candidate != null)
+{
+    <EditForm Model="@Candidate" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group mb-3">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" id="email" @bind="Candidate!.Email" maxlength="150" required>
+    </div>
+    <div class="form-group mb-3">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" @bind="Candidate!.FirstName" maxlength="50" required>
+    </div>
+    <div class="form-group mb-3">
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" @bind="Candidate!.LastName" maxlength="50" required>
+    </div>
+    <div class="form-group mb-3">
+        <label for="phoneNumber">Phone Number</label>
+        <input type="tel" class="form-control" id="phoneNumber" @bind="Candidate!.PhoneNumber" maxlength="25">
+    </div>
+    <div class="form-group mb-3">
+        <label for="linkedInUrl">LinkedIn Url</label>
+        <input type="url" class="form-control" id="linkedInUrl" @bind="Candidate!.LinkedInUrl" maxlength="250">
+    </div>
+    <div class="form-group mb-3">
+        <label for="gitHubUrl">GitHub Url</label>
+        <input type="url" class="form-control" id="gitHubUrl" @bind="Candidate!.GitHubUrl" maxlength="250">
+    </div>
+    <div class="form-group mb-3">
+        <label for="startTime">Start Time</label>
+        <input type="time" class="form-control" id="startTime" @bind="Candidate!.TimeInterval!.StartTime" min="08:00"
+            max="14:00" step="900" required>
+    </div>
+    <div class="form-group mb-3">
+        <label for="endTime">End Time</label>
+        <input type="time" class="form-control" id="endTime" @bind="Candidate!.TimeInterval!.EndTime" min="15:00"
+            max="19:00" step="900" required>
+    </div>
+    <div class="form-group mb-3">
+        <label for="comment">Comment</label>
+        <textarea class="form-control" id="comment" @bind="Candidate!.Comment" rows="3" required></textarea>
+    </div>
+    <div class="row row-cols-4">
+        <button type="reset" class="btn btn-secondary m-1" @onclick="NavigateToCandidates">Cancel</button>
+        <button type="button" class="btn btn-secondary m-1" @onclick="OnReset">Reset</button>
+        <button type="submit" class="btn btn-primary m-1">Submit</button>
+    </div>
+</EditForm>
+}
+
+@code {
+    [Parameter]
+    public string? Email { get; set; }
+    private CandidateDto? Candidate { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnReset();
+    }
+
+    protected async Task OnReset()
+    {
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            Candidate = new();
+            Candidate.TimeInterval = new();
+        }
+        else
+        {
+            Candidate = await CandidateService.GetCandidateAsync(Email);
+        }
+    }
+
+    protected void NavigateToCandidates()
+    {
+        NavigationManager.NavigateTo("/candidates");
+    }
+
+    protected async void HandleValidSubmit()
+    {
+        if (Candidate != null)
+        {
+            var validationResult = Candidate.IsValid();
+            if (validationResult.IsValid)
+            {
+                await CandidateService.CreateUpdateCandidateAsync(Candidate);
+                NavigateToCandidates();
+            }
+        }
+    }
+}

@@ -86,7 +86,8 @@
             "type": "blazorwasm",
             "request": "launch",
             "browser": "chrome",
-            "cwd": "${workspaceFolder}/src/CandidateTestTask.Client",          
+            "cwd": "${workspaceFolder}/src/CandidateTestTask.Client",   
+            "url": "http://localhost:5173"    
           },                      
     ]
 }
